@@ -9,23 +9,23 @@ import org.apache.commons.cli.PosixParser;
 
 public class Cli {
 	public static final String OPTION_HELP = "help";
-	public static final String OPTION_PDF = "pdf";
+	public static final String OPTION_PDF_IN = "in";
+	public static final String OPTION_PDF_OUT = "out";
 
-	private String[] args = null;
 	private Options options = initOptions();
 
-	public Cli(String[] args) {
-		this.args = args;
+	public Cli() {
 	}
 
 	public Options initOptions() {
 		Options options = new Options();
 		options.addOption("h", OPTION_HELP, false, "print this info");
-		options.addOption("p", OPTION_PDF, true, "Name of pdf file to process");
+		options.addOption(OPTION_PDF_IN, true, "Name of pdf file to process");
+		options.addOption(OPTION_PDF_OUT, true, "Name of pdf file to produce");
 		return options;
 	}
 
-	public void parse() {
+	public void parse(String[] args) {
 		CommandLineParser parser = new PosixParser();
 		CommandLine cmd = null;
 		try {
@@ -41,8 +41,15 @@ public class Cli {
 			System.exit(0);
 		}
 
-		if (cmd.hasOption(OPTION_PDF)) {
-			System.out.println("Processing " + cmd.getOptionValue("v"));
+		if (cmd.hasOption(OPTION_PDF_IN) && cmd.hasOption(OPTION_PDF_OUT)) {
+			try {
+				PdfProcessor.mark(
+						cmd.getOptionValue(OPTION_PDF_IN),
+						cmd.getOptionValue(OPTION_PDF_OUT));
+			} catch(Exception e) {
+				System.err.println(e.getMessage());
+				System.exit(2);
+			}
 		} else {
 			help();
 			System.exit(1);

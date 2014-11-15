@@ -7,6 +7,6 @@ package org.indt.divanov;
 public class Main {
 
 	public static void main(String[] args) {
-		new Cli(args).parse();
+		new Cli().parse(args);
 	}
 }
