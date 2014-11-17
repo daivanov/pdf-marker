@@ -16,11 +16,12 @@ import com.itextpdf.text.pdf.parser.Matrix;
 import com.itextpdf.text.pdf.parser.PdfReaderContentParser;
 import com.itextpdf.text.pdf.parser.RenderListener;
 import com.itextpdf.text.pdf.parser.TextRenderInfo;
+import com.itextpdf.text.Rectangle;
 
 public class PdfProcessor {
 
 	private static final int PAGE = 1;
-	private static final int MARKER_SIZE = 10;
+	private static final float MARKER_PERCENT = 0.025f;
 
 	private static class MarginFinder implements RenderListener {
 		private Rectangle2D.Float boundingBox = null;
@@ -75,18 +76,21 @@ public class PdfProcessor {
 		PdfReader reader = new PdfReader(pdfInFile);
 		PdfReaderContentParser parser = new PdfReaderContentParser(reader);
 		Rectangle2D.Float bbox = getBoundingBox(parser, PAGE);
+		Rectangle mediaBox = reader.getPageSizeWithRotation(PAGE);
+		float halfMarkerSize = MARKER_PERCENT *
+				Math.min(mediaBox.getHeight(), mediaBox.getWidth());
+		float x = bbox.x - halfMarkerSize;
+		if (x < halfMarkerSize) {
+			x = halfMarkerSize;
+		}
+		float y = bbox.y + bbox.height + halfMarkerSize;
+		if (y > mediaBox.getHeight() - halfMarkerSize) {
+			y = mediaBox.getHeight() - halfMarkerSize;
+		}
 		PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(pdfOutFile));
 		PdfContentByte cb = stamper.getOverContent(PAGE);
-		float x = bbox.x - MARKER_SIZE / 2;
-		if (x < MARKER_SIZE / 2) {
-			x = MARKER_SIZE / 2;
-		}
-		float y = bbox.y + bbox.height + MARKER_SIZE / 2;
-		if (y > reader.getPageSizeWithRotation(PAGE).getHeight() - MARKER_SIZE / 2) {
-			y = reader.getPageSizeWithRotation(PAGE).getHeight() - MARKER_SIZE / 2;
-		}
-		drawMarker(cb, "1", MARKER_SIZE, x, y);
-		System.out.println("Saving to  " + pdfOutFile);
+		drawMarker(cb, "1", 2 * halfMarkerSize, x, y);
+		System.out.println("Saving to " + pdfOutFile);
 		stamper.close();
 		reader.close();
 	}
