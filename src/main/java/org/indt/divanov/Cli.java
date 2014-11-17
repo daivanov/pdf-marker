@@ -47,7 +47,7 @@ public class Cli {
 						cmd.getOptionValue(OPTION_PDF_IN),
 						cmd.getOptionValue(OPTION_PDF_OUT));
 			} catch(Exception e) {
-				System.err.println(e.getMessage());
+				System.err.println("Failure: " + e.getMessage());
 				System.exit(2);
 			}
 		} else {
