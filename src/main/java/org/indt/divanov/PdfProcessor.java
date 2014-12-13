@@ -8,7 +8,6 @@ import com.itextpdf.awt.geom.Rectangle2D;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfContentByte;
-import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
 import com.itextpdf.text.pdf.parser.ImageRenderInfo;
@@ -69,7 +68,7 @@ public class PdfProcessor {
 		}
 	}
 
-	public static void mark(String pdfInFile, String pdfOutFile)
+	public static void mark(String marker, String pdfInFile, String pdfOutFile)
 			throws IOException, DocumentException {
 
 		System.out.println("Loading " + pdfInFile);

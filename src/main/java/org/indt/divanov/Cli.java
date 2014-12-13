@@ -1,5 +1,7 @@
 package org.indt.divanov;
 
+import java.io.File;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -10,7 +12,7 @@ import org.apache.commons.cli.PosixParser;
 public class Cli {
 	public static final String OPTION_HELP = "help";
 	public static final String OPTION_PDF_IN = "in";
-	public static final String OPTION_PDF_OUT = "out";
+	public static final String OPTION_MARK = "mark";
 
 	private Options options = initOptions();
 
@@ -21,7 +23,7 @@ public class Cli {
 		Options options = new Options();
 		options.addOption("h", OPTION_HELP, false, "print this info");
 		options.addOption(OPTION_PDF_IN, true, "Name of pdf file to process");
-		options.addOption(OPTION_PDF_OUT, true, "Name of pdf file to produce");
+		options.addOption("m", OPTION_MARK, true, "Mark to place into PDF");
 		return options;
 	}
 
@@ -41,11 +43,12 @@ public class Cli {
 			System.exit(0);
 		}
 
-		if (cmd.hasOption(OPTION_PDF_IN) && cmd.hasOption(OPTION_PDF_OUT)) {
+		if (cmd.hasOption(OPTION_PDF_IN) && cmd.hasOption(OPTION_MARK)) {
 			try {
-				PdfProcessor.mark(
-						cmd.getOptionValue(OPTION_PDF_IN),
-						cmd.getOptionValue(OPTION_PDF_OUT));
+				String inFile = cmd.getOptionValue(OPTION_PDF_IN);
+				String mark = cmd.getOptionValue(OPTION_MARK);
+				String outFile = getOutputFileName(inFile, mark);
+				PdfProcessor.mark(mark, inFile, outFile);
 			} catch(Exception e) {
 				System.err.println("Failure: " + e.getMessage());
 				System.exit(2);
@@ -54,6 +57,11 @@ public class Cli {
 			help();
 			System.exit(1);
 		}
+	}
+
+	public static String getOutputFileName(String fileName, String update) {
+		File file = new File(fileName).getAbsoluteFile();
+		return file.getParent() + "/" +  update + "-" + file.getName();
 	}
 
 	private void help() {
